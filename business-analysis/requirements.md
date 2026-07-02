@@ -107,4 +107,4 @@ Celem dokumentu jest uporządkowanie zidentyfikowanych problemów, wymagań bizn
 | OOS.03 | Produkcyjna integracja z IVR | Proces IVR został odwzorowany na poziomie analitycznym |
 | OOS.04 | Mechanizm rzeczywistego kolejkowania połączeń | Projekt skupia się na danych i raportowaniu |
 
-EOF
+
