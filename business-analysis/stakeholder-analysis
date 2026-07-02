@@ -1,25 +1,71 @@
-# Stakeholder Analysis
+# Analiza interesariuszy
+
+## Cel dokumentu
+
+Celem analizy jest identyfikacja kluczowych interesariuszy procesu Contact Center oraz określenie ich potrzeb, celów i problemów biznesowych.
+
+---
 
 ## Klient
 
-Cele:
-- szybkie rozwiązanie problemu
-- krótki czas oczekiwania
+### Cele
 
-## Konsultant
+- szybkie rozwiązanie problemu,
+- krótki czas oczekiwania,
+- wygodny kontakt z organizacją.
 
-Cele:
-- dostęp do historii klienta
-- szybka obsługa zgłoszeń
+### Problemy
 
-## Team Leader
+- długie kolejki,
+- konieczność wielokrotnego kontaktu,
+- brak informacji o statusie sprawy.
 
-Cele:
-- monitorowanie KPI
-- realizacja SLA
+---
 
-## Manager Contact Center
+## Konsultant Contact Center
 
-Cele:
-- optymalizacja kosztów
-- poprawa jakości obsługi
+### Cele
+
+- szybki dostęp do informacji o kliencie,
+- sprawna obsługa zgłoszeń,
+- ograniczenie czynności manualnych.
+
+### Problemy
+
+- brak pełnego kontekstu klienta,
+- konieczność pracy w wielu systemach,
+- duże obciążenie w godzinach szczytu.
+
+---
+
+## Lider Zespołu
+
+### Cele
+
+- monitorowanie efektywności zespołu,
+- kontrola realizacji SLA,
+- identyfikacja problemów operacyjnych.
+
+### Kluczowe wskaźniki
+
+- FCR,
+- SLA,
+- AHT,
+- Abandonment Rate.
+
+---
+
+## Menedżer Contact Center
+
+### Cele
+
+- poprawa jakości obsługi,
+- optymalizacja kosztów operacyjnych,
+- zwiększenie satysfakcji klientów.
+
+### Kluczowe wskaźniki
+
+- FCR,
+- SLA,
+- koszt obsługi kontaktu,
+- liczba zgłoszeń.
