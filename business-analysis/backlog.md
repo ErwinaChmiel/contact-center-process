@@ -1,4 +1,4 @@
-cat > business-analysis/backlog-produktu.md <<'EOF'
+
 # Backlog produktu
 
 ## Epic 1 — Obsługa połączeń
@@ -74,4 +74,4 @@ Wartość biznesowa: Kontrola czasu obsługi i oczekiwania.
 
 Priorytet: Średni  
 Wartość biznesowa: Identyfikacja godzin przeciążenia Contact Center.
-EOF
+
