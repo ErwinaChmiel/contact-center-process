@@ -1,4 +1,3 @@
-cat > business-analysis/user-stories.md <<'EOF'
 # User Stories
 
 ## Epic: Obsługa połączeń przychodzących
@@ -78,4 +77,4 @@ aby bardziej złożone zgłoszenia zostały obsłużone przez właściwy zespó�
 - system zapisuje datę i powód eskalacji,
 - sprawa otrzymuje status "Eskalowana",
 - eskalacje są widoczne w dashboardzie.
-EOF
+
