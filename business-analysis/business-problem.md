@@ -122,4 +122,3 @@ Zidentyfikowane problemy zostały wykorzystane jako podstawa do:
 - zaprojektowania modelu danych SQL,
 - budowy dashboardu Power BI.
 
-EOF
