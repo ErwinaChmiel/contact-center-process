@@ -97,17 +97,8 @@ Integracja umożliwia przekazanie informacji z IVR do systemu Contact Center w c
 |---|---|
 | BR.INT.01 | Jeżeli klient wybierze self-service, połączenie nie musi być przekazane do konsultanta |
 | BR.INT.02 | Jeżeli klient wybierze callback, system powinien zapisać zgłoszenie oddzwonienia |
-| BR.INT.03 | Każde połączenie powinno mieć przypisany temat sprawy lub kategorię techniczną „UNKNOWN” |
+| BR.INT.03 | Każde połączenie powinno mieć przypisany temat sprawy lub kategorię techniczną UNKNOWN |
 | BR.INT.04 | Czas rozpoczęcia połączenia jest wymagany do wyliczenia ASA i AHT |
-
-## Powiązane KPI
-
-| KPI | Wpływ integracji |
-|---|---|
-| ASA | Pomiar czasu oczekiwania na odpowiedź |
-| Abandonment Rate | Identyfikacja połączeń porzuconych |
-| Self-service Rate | Monitorowanie udziału spraw obsłużonych w IVR |
-| Callback Rate | Monitorowanie liczby wybranych callbacków |
 
 ---
 
@@ -154,14 +145,6 @@ Integracja umożliwia konsultantowi dostęp do danych klienta oraz historii wcze
 | BR.INT.07 | Kategoria kontaktu jest wymagana do zamknięcia zgłoszenia |
 | BR.INT.08 | Brak klienta w CRM powinien skutkować obsługą jako klient niezidentyfikowany |
 
-## Powiązane wymagania
-
-| ID | Wymaganie |
-|---|---|
-| WF.02 | Identyfikacja klienta |
-| WF.03 | Rejestracja przyczyny kontaktu |
-| WF.07 | Dane do raportowania KPI |
-
 ---
 
 # INT.03 — Integracja Contact Center z SQL Database
@@ -200,17 +183,6 @@ Integracja odpowiada za zasilenie relacyjnej bazy danych informacjami operacyjny
 | DQ.05 | Callback powinien mieć status: SCHEDULED, COMPLETED, CANCELLED lub MISSED |
 | DQ.06 | Sprawy po SLA powinny być możliwe do identyfikacji w modelu danych |
 
-## Powiązane KPI
-
-| KPI | Źródło danych |
-|---|---|
-| AHT | calls, contacts |
-| ASA | calls |
-| FCR | cases, contacts |
-| SLA | cases |
-| Abandonment Rate | calls |
-| Callback Realization Rate | callbacks |
-
 ---
 
 # INT.04 — Integracja CRM z SQL Database
@@ -235,3 +207,130 @@ Integracja umożliwia wykorzystanie danych klienta w analizie operacyjnej i segm
 |---|---|
 | Segmentacja klientów | Analiza FCR według segmentu |
 | Analiza wolumenu | Liczba kontaktów według typu klienta |
+| Analiza jakości | Porównanie SLA dla segmentów klientów |
+| Analiza operacyjna | Identyfikacja klientów z wieloma kontaktami |
+
+---
+
+# INT.05 — Integracja Back Office / 2nd Line z SQL Database
+
+## Cel integracji
+
+Integracja umożliwia raportowanie spraw eskalowanych oraz analizę wpływu eskalacji na SLA i FCR.
+
+## Zakres danych
+
+| Dane | Opis |
+|---|---|
+| ticketId | Identyfikator zgłoszenia |
+| escalationDate | Data eskalacji |
+| escalationReason | Powód eskalacji |
+| secondLineTeam | Zespół obsługujący eskalację |
+| resolutionDate | Data rozwiązania sprawy |
+| finalStatus | Końcowy status zgłoszenia |
+
+---
+
+# INT.06 — Integracja SQL Database z Power BI
+
+## Cel integracji
+
+Integracja umożliwia prezentację danych operacyjnych i KPI w dashboardzie Power BI.
+
+## Zakres danych raportowych
+
+| Obszar | Dane |
+|---|---|
+| Połączenia | liczba połączeń, ASA, AHT, porzucenia |
+| Zgłoszenia | statusy, SLA, eskalacje |
+| Kontakty | FCR, kategorie kontaktów |
+| Konsultanci | wydajność, AHT, FCR |
+| Callbacki | zaplanowane, zrealizowane, niezrealizowane |
+| Self-service | liczba spraw obsłużonych w IVR |
+
+## Tryb zasilania Power BI
+
+| Tryb | Opis | Zastosowanie |
+|---|---|---|
+| Import | Dane są ładowane do modelu Power BI | Projekt portfolio i raportowanie cykliczne |
+| DirectQuery | Power BI odpytuje bazę bezpośrednio | Monitoring bliższy rzeczywistemu |
+| Scheduled Refresh | Odświeżenie według harmonogramu | Raportowanie operacyjne |
+
+---
+
+# INT.07 — Integracja przez REST API Layer
+
+## Cel integracji
+
+REST API Layer umożliwia standaryzację komunikacji pomiędzy komponentami systemu oraz opis wybranych operacji biznesowych w sposób zrozumiały dla zespołów IT i biznesu.
+
+## Przykładowe operacje API
+
+| Operacja | Endpoint | Cel |
+|---|---|---|
+| Utworzenie callbacku | POST /api/v1/callbacks | Rejestracja zgłoszenia oddzwonienia |
+| Pobranie danych klienta | GET /api/v1/customers/{customerId} | Udostępnienie danych klienta konsultantowi |
+| Pobranie historii kontaktów | GET /api/v1/customers/{customerId}/contacts | Prezentacja kontekstu klienta |
+| Aktualizacja statusu zgłoszenia | PUT /api/v1/tickets/{ticketId}/status | Obsługa zmian w procesie zgłoszenia |
+| Pobranie KPI | GET /api/v1/kpi/contact-center | Dane dla warstwy raportowej |
+
+---
+
+## Obsługa błędów integracyjnych
+
+| ID | Scenariusz błędu | Oczekiwane zachowanie systemu |
+|---|---|---|
+| ERR.01 | Brak odpowiedzi z CRM | System pokazuje komunikat o braku danych klienta i umożliwia obsługę jako klient niezidentyfikowany |
+| ERR.02 | Niepoprawny numer telefonu dla callbacku | System blokuje utworzenie callbacku i wskazuje błąd walidacji |
+| ERR.03 | Brak identyfikatora klienta | System zapisuje kontakt jako anonimowy lub niezidentyfikowany |
+| ERR.04 | Błąd zapisu do SQL Database | System rejestruje błąd techniczny i zapisuje zdarzenie do logu |
+| ERR.05 | Brak danych w Power BI | Dashboard powinien pokazać komunikat o braku danych dla wybranych filtrów |
+
+---
+
+## Macierz integracja → wymagania
+
+| Integracja | Powiązane wymagania |
+|---|---|
+| INT.01 | WF.01, WF.04, WF.08 |
+| INT.02 | WF.02, WF.03, WF.07 |
+| INT.03 | WF.07, WF.08 |
+| INT.04 | WF.02, WF.07 |
+| INT.05 | WF.06, WF.07, WF.08 |
+| INT.06 | WB.05, WF.07, WF.08 |
+| INT.07 | WF.02, WF.04, WF.05, WF.06 |
+
+---
+
+## Macierz integracja → KPI
+
+| Integracja | KPI |
+|---|---|
+| INT.01 | ASA, Abandonment Rate, Self-service Rate, Callback Rate |
+| INT.02 | FCR, Contact History, Customer Segment Analysis |
+| INT.03 | AHT, ASA, FCR, SLA, Callback Rate |
+| INT.04 | Customer Segment Analysis, FCR by Segment |
+| INT.05 | Escalation Rate, SLA, Cases Past SLA |
+| INT.06 | Wszystkie KPI raportowane w Power BI |
+| INT.07 | Callback Rate, Customer History, Ticket Status, KPI API |
+
+---
+
+## Ryzyka integracyjne
+
+| ID | Ryzyko | Wpływ | Sposób ograniczenia |
+|---|---|---|---|
+| R.INT.01 | Brak spójności identyfikatorów klienta między systemami | Błędne łączenie danych | Walidacja customerId i reguły Data Quality |
+| R.INT.02 | Opóźnienie w zasilaniu danych SQL | Nieaktualne KPI | Harmonogram odświeżania i monitoring zasileń |
+| R.INT.03 | Niepełne dane o callbackach | Błędny Callback Rate | Wymagalność statusu callbacku |
+| R.INT.04 | Brak kategorii kontaktu | Utrudniona analiza powodów kontaktu | Wymuszenie wyboru kategorii przed zamknięciem zgłoszenia |
+| R.INT.05 | Błędy po stronie CRM | Brak danych klienta podczas rozmowy | Obsługa trybu awaryjnego dla klienta niezidentyfikowanego |
+
+---
+
+## Podsumowanie
+
+Integracje w projekcie Contact Center wspierają pełny przepływ informacji od momentu połączenia klienta z IVR, przez obsługę w Contact Center i CRM, aż po zapis danych w SQL Database oraz prezentację KPI w Power BI.
+
+EOF
+``
