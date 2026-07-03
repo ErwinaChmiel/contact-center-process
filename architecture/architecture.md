@@ -366,14 +366,4 @@ Projekt pokazuje powiązanie pomiędzy:
 - dashboardem Power BI,
 - KPI operacyjnymi.
 
-EOF
-```
-
-Potem commit:
-
-```bash
-git add architecture/architecture.md
-git commit -m "Add solution architecture documentation"
-git push
-```
 
