@@ -459,7 +459,7 @@ Raport umożliwia analizę:
 
 ### Podgląd dashboardu — overview
 
-![Dashboard overview](05_02_dashboard-overview.png)
+![Dashboard overview](05_power-bi-dashboard/05_03_operational-analytics.png.png)
 
 ### Operational Analytics
 
