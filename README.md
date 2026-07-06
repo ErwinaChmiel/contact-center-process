@@ -164,12 +164,12 @@ Dzięki temu repozytorium pokazuje nie tylko końcowy dashboard, ale cały proce
 | Obszar | Folder |
 |---|---|
 | Project overview | [00_project-overview](00_project-overview/) |
-| Business analysis | 01_business-analysis/ |
-| Process analysis — BPMN | 02_process-analysis/ |
-| Solution architecture | 03_solution-architecture/ |
-| Data model — SQL | 04_data-model/ |
-| Power BI dashboard | 05_power-bi-dashboard/ |
-| Documentation | 06_documentation/ |
+| Business analysis | [01_business-analysis](01_business-analysis/) |
+| Process analysis — BPMN | [02_process-analysis](02_process-analysis/) |
+| Solution architecture | [03_solution-architecture/](03_solution-architecture/) |
+| Data model — SQL | [04_data-model](04_data-model/) |
+| Power BI dashboard | [05_power-bi-dashboard/](05_power-bi-dashboard/) |
+| Documentation | [06_documentation/](06_documentation/) |
 
 ---
 
