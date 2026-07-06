@@ -508,6 +508,40 @@ Widoczne są m.in.:
 - tabela konsultantów wymagających analizy.
 
 05_power-bi-dashboard/05_06_alerts-and-exceptions.png
+``
+
+### Segments & Agents Analysis
+
+Strona pokazuje analizę efektywności konsultantów, zespołów oraz segmentów klientów.
+
+Widoczne są m.in.:
+
+- FCR by Agent Team,
+- Average Handle Time by Team,
+- Calls Handled by Agent,
+- FCR by Agent,
+- AHT by Agent,
+- Customer Segment Call Volume,
+- FCR by Customer Segment,
+- Trend Analysis for Agents.
+
+05_power-bi-dashboard/05_05_segments-and-agents-analysis.png
+
+### Alerts & Exceptions
+
+Strona pokazuje alerty operacyjne i wyjątki wymagające uwagi lidera lub menedżera Contact Center.
+
+Widoczne są m.in.:
+
+- Cases Past SLA,
+- Unresolved Callbacks,
+- Abandoned Calls,
+- Agents with High AHT,
+- lista spraw po SLA,
+- alerty callbacków,
+- tabela konsultantów wymagających analizy.
+
+05_power-bi-dashboard/05_06_alerts-and-exceptions.png
 
 ---
 
