@@ -163,7 +163,7 @@ Dzięki temu repozytorium pokazuje nie tylko końcowy dashboard, ale cały proce
 
 | Obszar | Folder |
 |---|---|
-| Project overview | 00_project-overview/ |
+| Project overview | [00_project-overview](00_project-overview/) |
 | Business analysis | 01_business-analysis/ |
 | Process analysis — BPMN | 02_process-analysis/ |
 | Solution architecture | 03_solution-architecture/ |
