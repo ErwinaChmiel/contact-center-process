@@ -1,204 +1,36 @@
-# Model danych i KPI
+# Traceability Matrix — Contact Center Process Optimization
 
-## 1. Diagram modelu danych
+## Cel dokumentu
 
-Model jest zbudowany w układzie zbliżonym do **star schema** – tabele faktów (`calls`, `cases`, `contacts`) połączone z wymiarami (`customers`, `agents`, `dimDate`) oraz techniczną tabelą miar (`measures_all`).
+Macierz śladowania pokazuje powiązanie między problemami biznesowymi, wymaganiami, User Stories, procesem BPMN, modelem danych oraz KPI.
 
-Poniżej diagram w formacie **Mermaid** (GitHub wyświetli go jako grafikę):
+Celem macierzy jest pokazanie, że każdy element rozwiązania wynika z konkretnego problemu biznesowego i wspiera mierzalne cele operacyjne Contact Center.
 
-```mermaid
-erDiagram
-    CUSTOMERS ||--o{ CALLS    : has
-    CUSTOMERS ||--o{ CASES    : owns
-    CUSTOMERS ||--o{ CONTACTS : "is party of"
+---
 
-    AGENTS   ||--o{ CALLS     : handles
-    AGENTS   ||--o{ CONTACTS  : handles
+## Traceability Matrix
 
-    CALLS    ||--o{ CASES     : "creates (first_call_id)"
-    CASES    ||--o{ CONTACTS  : "is handled in"
+| Problem biznesowy | Wymaganie biznesowe | Wymaganie funkcjonalne | User Story | Artefakt / proces | KPI |
+|---|---|---|---|---|---|
+| PB-01 Długi czas oczekiwania klientów na połączenie | BR-01 Skrócić czas oczekiwania w kolejce | FR-01 System powinien mierzyć czas oczekiwania klienta przed połączeniem z konsultantem | US-01 Jako lider Contact Center chcę monitorować czas oczekiwania, aby reagować na przeciążenie infolinii | BPMN AS-IS, BPMN TO-BE, SQL `calls` | ASA |
+| PB-02 Wysoki poziom porzuconych połączeń | BR-02 Zmniejszyć liczbę porzuconych połączeń | FR-02 System powinien rejestrować porzucone połączenia i moment zakończenia oczekiwania | US-02 Jako lider Contact Center chcę analizować porzucone połączenia, aby usprawnić obsadę i kolejki | BPMN AS-IS, SQL `calls`, Power BI dashboard | Abandonment Rate |
+| PB-03 Brak callbacku jako alternatywy dla kolejki | BR-03 Udostępnić klientowi możliwość wyboru oddzwonienia | FR-03 System powinien umożliwiać utworzenie żądania callbacku | US-03 Jako klient chcę wybrać callback, aby nie czekać w kolejce | BPMN TO-BE, API `POST /api/v1/callbacks`, SQL `callbacks` | Callback Rate, Callback Realization Rate |
+| PB-04 Ograniczony zakres self-service w IVR | BR-04 Zwiększyć udział spraw obsłużonych automatycznie | FR-04 System powinien rozpoznawać sprawy możliwe do obsługi w IVR | US-04 Jako klient chcę załatwić prostą sprawę w IVR, aby nie czekać na konsultanta | BPMN TO-BE, SQL `calls` | Self-service Rate |
+| PB-05 Niski poziom FCR | BR-05 Zwiększyć liczbę spraw rozwiązanych przy pierwszym kontakcie | FR-05 System powinien oznaczać, czy sprawa została rozwiązana przy pierwszym kontakcie | US-05 Jako lider zespołu chcę widzieć poziom FCR, aby identyfikować obszary wymagające poprawy | SQL `contacts`, SQL `cases`, Power BI dashboard | FCR |
+| PB-06 Brak pełnej kontroli SLA | BR-06 Monitorować realizację spraw względem SLA | FR-06 System powinien rejestrować zdarzenia SLA i status przekroczenia terminu | US-06 Jako menedżer chcę monitorować SLA, aby priorytetyzować zaległe sprawy | SQL `sla_events`, Power BI dashboard | SLA Rate |
+| PB-07 Brak analizy przyczyn kontaktu | BR-07 Umożliwić tagowanie powodu kontaktu i wyniku rozmowy | FR-07 System powinien zapisywać powód kontaktu oraz wynik rozmowy | US-07 Jako analityk chcę analizować powody kontaktu, aby wskazywać obszary do automatyzacji | BPMN TO-BE, SQL `contacts`, Power BI dashboard | Contact Reason Distribution |
+| PB-08 Trudna identyfikacja spraw wymagających eskalacji | BR-08 Uporządkować obsługę eskalacji do 2nd line | FR-08 System powinien rejestrować eskalacje i status obsługi sprawy | US-08 Jako lider Contact Center chcę widzieć eskalacje, aby analizować przyczyny przekazywania spraw | BPMN AS-IS, BPMN TO-BE, SQL `cases` | Escalation Rate |
+| PB-09 Brak spójnego modelu danych do raportowania | BR-09 Zapewnić model danych wspierający KPI Contact Center | FR-09 System powinien przechowywać dane o połączeniach, sprawach, kontaktach, konsultantach i klientach | US-09 Jako analityk BI chcę mieć spójny model danych, aby budować raporty KPI | SQL schema, sample data, KPI queries | Wszystkie KPI |
+| PB-10 Ograniczona widoczność efektywności konsultantów | BR-10 Umożliwić analizę KPI na poziomie konsultanta i zespołu | FR-10 System powinien umożliwiać przypisanie kontaktu do konsultanta | US-10 Jako lider zespołu chcę analizować KPI konsultantów, aby wspierać coaching i planowanie obsady | SQL `agents`, SQL `contacts`, Power BI dashboard | AHT, FCR, SLA Rate |
 
-    DIMDATE  ||--o{ CALLS     : "call dates"
-    DIMDATE  ||--o{ CASES     : "opened / closed"
+---
 
-    CUSTOMERS {
-      int     customer_id PK
-      string  name
-      string  segment
-      string  region
-    }
+## Podsumowanie
 
-    AGENTS {
-      int     agent_id PK
-      string  name
-      string  team
-      string  seniority
-    }
+Macierz pokazuje, że projekt nie ogranicza się do samego modelu BPMN ani dashboardu. Każdy element rozwiązania jest powiązany z problemem biznesowym, wymaganiem, User Story, artefaktem projektowym oraz KPI.
 
-    CALLS {
-      int     call_id PK
-      int     customer_id FK
-      int     agent_id FK
-      datetime start_time
-      datetime ivr_start_time
-      datetime queue_start_time
-      datetime answer_time
-      datetime end_time
-      string  direction
-      string  channel
-      string  ivr_topic
-      bool    is_self_service
-      bool    is_callback_chosen
-      bool    is_callback_realized
-      bool    is_answered_by_agent
-      bool    is_abandoned_in_queue
-    }
+Dzięki temu projekt pokazuje pełny sposób pracy analitycznej:
 
-    CASES {
-      int     case_id PK
-      int     customer_id FK
-      int     first_call_id FK
-      datetime opened_at
-      datetime closed_at
-      string  status
-      string  case_category
-      string  case_subcategory
-      string  priority
-      bool    is_escalated_to_2nd_line
-      datetime sla_due_at
-      bool    resolved_in_sla
-      string  resolution_type
-    }
-
-    CONTACTS {
-      int     contact_id PK
-      int     case_id FK
-      int     call_id FK
-      int     customer_id FK
-      int     agent_id FK
-      datetime contact_time
-      string  channel
-      bool    is_first_contact
-      bool    resolved_this_contact
-      bool    is_inbound
-    }
-
-    DIMDATE {
-      date    Date PK
-      int     Year
-      int     Month
-      int     Day
-      string  YearMonth
-      int     Hour
-    }
+```text
+Problem biznesowy → wymaganie → User Story → proces → dane → KPI → decyzja biznesowa
 ```
-
-## 2. Tabele i ich rola w modelu
-
-| Tabela | Rola w modelu | Ziarnistość (grain) | Klucz główny | Najważniejsze relacje |
-|---|---|---|---|---|
-| `calls` | fact | 1 wiersz = 1 połączenie (inbound / outbound, IVR / agent) | `call_id` | `customer_id` → `customers.customer_id` • `agent_id` → `agents.agent_id` • daty → `dimDate[Date]` (np. po `start_time`) |
-| `cases` | fact | 1 wiersz = 1 sprawa / zgłoszenie | `case_id` | `customer_id` → `customers.customer_id` • `first_call_id` → `calls.call_id` • daty → `dimDate[Date]` (`opened_at`, `closed_at`) |
-| `contacts` | fact | 1 wiersz = 1 kontakt konsultanta w ramach sprawy | `contact_id` | `case_id` → `cases.case_id` • `call_id` → `calls.call_id` • `customer_id` → `customers.customer_id` • `agent_id` → `agents.agent_id` |
-| `agents` | dimension | 1 wiersz = 1 konsultant | `agent_id` | Łączona z `calls.agent_id` i `contacts.agent_id` |
-| `customers` | dimension | 1 wiersz = 1 klient | `customer_id` | Łączona z `calls.customer_id`, `cases.customer_id`, `contacts.customer_id` |
-| `dimDate` | dimension | 1 wiersz = 1 dzień (opcjonalnie godzina) | `Date` | Łączona z polami daty w faktach (`calls.start_time`, `cases.opened_at`, `cases.closed_at`) |
-| `measures_all` | helper | Tabela techniczna – przechowuje wyłącznie miary DAX | – | Służy do grupowania wszystkich KPI w jednym miejscu (ASA, AHT, FCR, SLA, Abandonment, Self-service, Callback itd.) |
-
-## 3. Opis modelu danych
-
-Model łączy perspektywę procesową (połączenia, sprawy, kontakty) z wymiarami klientów, konsultantów i czasu.
-
-### 3.1. Wymiary
-
-- `customers` – dane klientów (segment B2C/SME/Corporate, region), do analizy zachowań i obciążenia według segmentów.
-- `agents` – dane konsultantów (zespół 1st/2nd line, seniority), do analizy efektywności zespołów i pojedynczych osób.
-- `dimDate` – wymiar czasu (dzień, opcjonalnie godzina) do spójnego filtrowania i agregacji metryk.
-
-### 3.2. Fakty procesowe
-
-- `calls` – każdy telefon do / z contact center:
-  - czasy: wejście na infolinię, wejście do IVR, wejście do kolejki, odebranie, zakończenie,
-  - temat z IVR (faktury, reklamacje, techniczne),
-  - flagi: samoobsługa, callback, porzucenie w kolejce, odebrane przez agenta.
-
-- `cases` – zgłoszenia:
-  - kategoria (billing, reklamacje, techniczne),
-  - priorytet,
-  - eskalacja do 2nd line,
-  - pola SLA (`sla_due_at`, `resolved_in_sla`),
-  - sposób rozwiązania (`resolution_type`: `FCR` / `after_escalation` / `self_service` / `no_solution`).
-
-- `contacts` – każdy kontakt konsultanta w ramach sprawy:
-  - który agent rozmawiał z klientem,
-  - czy był to pierwszy kontakt,
-  - czy sprawa została zamknięta w tym kontakcie.
-
-### 3.3. Co umożliwia model
-
-Dzięki takiej strukturze można:
-
-- prześledzić cały flow połączenia: `IVR → kolejka → konsultant → zgłoszenie → rozwiązanie`,
-- analizować `SLA` i `FCR` na poziomie spraw (`cases`),
-- badać efektywność `self-service` i `callback`,
-- porównywać wyniki zespołów i agentów oraz segmentów klientów.
-
-## 4. Kluczowe KPI (logika biznesowa)
-
-Poniżej logika najważniejszych KPI, które są zaimplementowane w miarach DAX w tabeli `measures_all`.
-
-> Uwaga: nazwy pól są przykładowe i powinny odpowiadać implementacji w modelu (np. `queue_start_time`, `answer_time`, `end_time`).
-
-### 4.1. Połączenia i kolejki
-
-- **Total Inbound Calls** – liczba wszystkich połączeń przychodzących (`direction = 'inbound'`).
-- **Answered Calls** – połączenia z `is_answered_by_agent = 1`.
-- **Abandoned In Queue** – połączenia z `is_abandoned_in_queue = 1`.
-- **ASA (Average Speed of Answer)** – średni czas od wejścia do kolejki (`queue_start_time`) do odebrania (`answer_time`).
-- **AHT (Average Handle Time)** – średni czas od odebrania (`answer_time`) do zakończenia (`end_time`).
-- **Queue Time (avg / p95)** – średni i 95-ty percentyl czasu oczekiwania w kolejce.
-
-### 4.2. Jakość obsługi
-
-- **FCR Cases** – liczba spraw z `resolution_type = 'FCR'`.
-- **FCR Rate** – udział FCR Cases w ogólnej liczbie spraw.
-- **Cases in SLA** – sprawy z `resolved_in_sla = 1`.
-- **SLA Rate** – udział spraw w SLA w ogólnej liczbie zamkniętych spraw.
-- **Escalated Cases / Escalation Rate** – sprawy z `is_escalated_to_2nd_line = 1` i ich udział procentowy.
-
-### 4.3. Self-service i callback
-
-- **Self-service Calls** – połączenia z `is_self_service = 1`.
-- **Self-service Rate** – udział samoobsługi w całkowitej liczbie połączeń.
-- **Callback Selected** – połączenia, w których klient wybrał callback (`is_callback_chosen = 1`).
-- **Callback Realized** – oddzwonienia zrealizowane (`is_callback_realized = 1`).
-- **Callback Rate** – udział połączeń z wyborem callbacku.
-- **Callback FCR** – sprawy rozwiązane podczas callbacku (np. `direction = 'outbound'` + `resolution_type = 'FCR'`).
-- **Callback Delay** – średni czas między pierwszym połączeniem a zrealizowanym oddzwonieniem.
-
-  ## Słownik miar DAX
-
-| Nazwa miary                | Skrót | Opis                                                       | Format     |
-|----------------------------|-------|------------------------------------------------------------|-----------|
-| Total Inbound Calls        | TIC   | Łączna liczba połączeń przychodzących                      | Liczba     |
-| Answered Calls             | AC    | Liczba połączeń odebranych przez konsultantów              | Liczba     |
-| Abandonment Rate           | AR    | Odsetek porzuconych połączeń                               | %         |
-| ASA (sec)                  | ASA   | Average Speed of Answer – średni czas oczekiwania (sekundy)| Liczba     |
-| AHT (sec)                  | AHT   | Average Handle Time – średni czas obsługi (sekundy)        | Liczba     |
-| Queue Time (sec)           | QT    | Średni czas spędzony w kolejce                             | Liczba     |
-| Self-service Calls         | SSC   | Liczba spraw załatwionych w IVR                            | Liczba     |
-| Self-service Rate          | SSR   | Udział spraw załatwionych w IVR                            | %         |
-| Callback Selected          | CBS   | Liczba klientów, którzy wybrali oddzwonienie               | Liczba     |
-| Callback Not Realized      | CBNR  | Liczba niezrealizowanych callbacków                        | Liczba     |
-| Callback Not Realized %    | CBNR% | Odsetek niezrealizowanych callbacków                       | %         |
-| Cases Total                | CT    | Liczba spraw w tabeli `cases`                              | Liczba     |
-| Cases in SLA               | CSLA  | Liczba spraw zamkniętych w terminie SLA                    | Liczba     |
-| SLA Rate                   | SLAR  | Odsetek spraw zamkniętych w terminie SLA                   | %         |
-| FCR Cases                  | FCRC  | Liczba spraw rozwiązanych przy pierwszym kontakcie         | Liczba     |
-| FCR Rate                   | FCRR  | Odsetek spraw z FCR                                        | %         |
-| FCR Rate by Agent          | FCRRA | FCR liczony na poziomie konsultanta                        | %         |
-| Escalated Cases            | ESC   | Liczba spraw eskalowanych do 2nd line                      | Liczba     |
-| Escalation Rate            | ESR   | Odsetek spraw eskalowanych                                 | %         |
-| Cases Past SLA             | CPS   | Liczba spraw zamkniętych po upływie SLA                    | Liczba     |
-| SLA Overdue (days)         | SLOD  | Liczba dni opóźnienia względem daty SLA                     | Liczba     |
-
