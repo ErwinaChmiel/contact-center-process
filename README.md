@@ -11,6 +11,19 @@
 
 ---
 
+# Contact Center Process Optimization — BPMN + SQL + Power BI
+
+> Portfolio project showing a full business, process, system, data and BI analysis case study for a Contact Center process.
+
+![Business Analysis](https://img.shields.io/badge/Business%20Analysis-Requirements-blue)
+![BPMN](https://img.shields.io/badge/BPMN-AS--IS%20%7C%20TO--BE-green)
+![SQL](https://img.shields.io/badge/SQL-Data%20Model-orange)
+![API](https://img.shields.io/badge/API-OpenAPI%203.0-lightgrey)
+![Power BI](https://img.shields.io/badge/Power%20BI-KPI%20Dashboard-yellow)
+![Portfolio](https://img.shields.io/badge/Portfolio-Business%20%7C%20BI%20Analyst-purple)
+
+---
+
 ## O projekcie
 
 Projekt przedstawia kompletne case study optymalizacji procesu obsługi połączeń przychodzących w Contact Center.
@@ -113,7 +126,11 @@ Dashboard i dokumentacja analityczna odpowiadają m.in. na pytania:
 - Którzy konsultanci mają podwyższony AHT lub niższy FCR?
 - Ile spraw przekroczyło SLA?
 - Jakie kategorie kontaktu generują największe obciążenie?
-- Jakie usprawnienia mogą zmniejszyć liczbę porzuconych połączeń?
+- Jak zmienia się ASA w ujęciu godzinowym?
+- Jak zmienia się AHT w ujęciu dziennym?
+- Które segmenty klientów generują największy wolumen połączeń?
+- Ilu callbacków nie udało się zrealizować?
+- Które alerty operacyjne wymagają reakcji lidera zespołu?
 
 ---
 
@@ -202,7 +219,10 @@ contact-center-process-bpmn/
 │   ├── 05_01_contact-center-kpis-dashboard.pbix
 │   ├── 05_02_dashboard-overview.png
 │   ├── 05_03_dashboard-kpi-pages.md
-│   ├── 05_04_dashboard-business-insights.md
+│   ├── 05_04_operational-analytics.png
+│   ├── 05_05_segments-and-agents-analysis.png
+│   ├── 05_06_alerts-and-exceptions.png
+│   ├── 05_07_dashboard-business-insights.md
 │   ├── dax/
 │   │   ├── measures_alerts.dax
 │   │   ├── measures_callbacks.dax
@@ -231,9 +251,7 @@ Projekt został ułożony tak, aby pokazać pełną ścieżkę pracy analityczne
 Rekomendowana kolejność czytania:
 
 1. Zacznij od `README.md`, aby zrozumieć cel projektu, zakres i strukturę repozytorium.
-
 2. Przejdź do `00_project-overview/`, aby poznać kontekst projektu, założenia oraz sposób czytania repozytorium.
-
 3. Następnie otwórz `01_business-analysis/`, gdzie znajdują się:
    - problem biznesowy,
    - interesariusze,
@@ -241,30 +259,25 @@ Rekomendowana kolejność czytania:
    - User Stories,
    - kryteria akceptacji,
    - backlog produktu.
-
 4. Przejdź do `02_process-analysis/`, aby porównać proces:
    - AS-IS — stan obecny,
    - TO-BE — proces docelowy po usprawnieniach.
-
 5. Sprawdź `03_solution-architecture/`, aby zobaczyć:
    - architekturę logiczną rozwiązania,
    - integracje między systemami,
    - przykładową specyfikację REST API,
    - plik OpenAPI `03_04_openapi.yaml`.
-
 6. Przejdź do `04_data-model/`, aby zobaczyć:
    - schemat bazy danych,
    - dane przykładowe,
    - zapytania SQL liczące KPI,
    - opis modelu danych.
-
 7. Otwórz `05_power-bi-dashboard/`, aby zobaczyć:
    - plik Power BI,
    - podgląd dashboardu,
    - opis wniosków biznesowych,
    - eksport miar DAX,
    - opis modelu semantycznego.
-
 8. Na końcu sprawdź `06_documentation/`, gdzie znajdują się:
    - podejście analityczne,
    - słownik pojęć,
@@ -312,9 +325,12 @@ Problem biznesowy → wymagania → proces BPMN → architektura → API → SQL
 | Opis modelu danych | `04_data-model/04_04_data-model-description.md` |
 | Dashboard Power BI | `05_power-bi-dashboard/05_01_contact-center-kpis-dashboard.pbix` |
 | Podgląd dashboardu | `05_power-bi-dashboard/05_02_dashboard-overview.png` |
+| Operational Analytics | `05_power-bi-dashboard/05_04_operational-analytics.png` |
+| Segments & Agents Analysis | `05_power-bi-dashboard/05_05_segments-and-agents-analysis.png` |
+| Alerts & Exceptions | `05_power-bi-dashboard/05_06_alerts-and-exceptions.png` |
 | Miary DAX | `05_power-bi-dashboard/dax/` |
 | Model semantyczny Power BI | `05_power-bi-dashboard/semantic-model/` |
-| Wnioski biznesowe z dashboardu | `05_power-bi-dashboard/05_04_dashboard-business-insights.md` |
+| Wnioski biznesowe z dashboardu | `05_power-bi-dashboard/05_07_dashboard-business-insights.md` |
 | Macierz śladowania | `06_documentation/06_03_traceability-matrix.md` |
 | Security & data governance | `06_documentation/06_05_security-and-data-governance.md` |
 
@@ -367,11 +383,11 @@ Proces docelowy po usprawnieniach:
 
 ### Podgląd procesu AS-IS
 
-![BPMN AS-IS](02_process-analysis/02_02_bpmn-as-is.png)
+02_process-analysis/02_02_bpmn-as-is.png
 
 ### Podgląd procesu TO-BE
 
-![BPMN TO-BE](02_process-analysis/02_04_bpmn-to-be.png)
+02_process-analysis/02_04_bpmn-to-be.png
 
 ---
 
@@ -384,7 +400,8 @@ Zawartość:
 - `03_01_architecture.md` — architektura logiczna rozwiązania,
 - `03_02_integrations.md` — analiza integracji i przepływu danych,
 - `03_03_api-specification.md` — przykładowa specyfikacja REST API,
-- `03_04_openapi.yaml` — przykładowa specyfikacja OpenAPI 3.0.
+- `03_04_openapi.yaml` — przykładowa specyfikacja OpenAPI 3.0,
+- `03_05_api-governance-notes.md` — notatki dotyczące API governance.
 
 Ta część pokazuje, jak proces biznesowy może zostać przełożony na komponenty systemowe, dane i integracje.
 
@@ -429,21 +446,81 @@ Dane przykładowe odzwierciedlają scenariusze biznesowe, takie jak:
 
 ## 05. Power BI Dashboard
 
-Folder `05_power-bi-dashboard/` zawiera raport Power BI oraz opis wniosków biznesowych.
+Folder `05_power-bi-dashboard/` zawiera raport Power BI oraz podglądy kluczowych stron dashboardu.
 
 Dashboard prezentuje m.in.:
 
 - Executive KPI Overview,
 - Call Flow / SLA / FCR / Callback Analysis,
 - Operational Analytics,
-- Segmentation & Agents Analysis,
+- Segments & Agents Analysis,
 - Alerts & Exceptions.
 
 Dashboard został przygotowany jako narzędzie wspierające pracę liderów i menedżerów Contact Center.
 
-### Podgląd dashboardu
+Raport umożliwia analizę:
 
-![Dashboard overview](05_power-bi-dashboard/05_02_dashboard-overview.png)
+- obciążenia infolinii w czasie,
+- czasu oczekiwania klientów,
+- średniego czasu obsługi połączeń,
+- porzuconych połączeń,
+- skuteczności zespołów i konsultantów,
+- jakości obsługi segmentów klientów,
+- callbacków,
+- spraw po SLA,
+- alertów operacyjnych i wyjątków.
+
+### Podgląd dashboardu — overview
+
+05_power-bi-dashboard/05_02_dashboard-overview.png
+
+### Operational Analytics
+
+Strona pokazuje szczegółową analitykę operacyjną kolejek, czasów oczekiwania i obsługi.
+
+Widoczne są m.in.:
+
+- Queue Abandonment Rate,
+- Inbound Abandonment Rate,
+- Queued Calls,
+- ASA Trend,
+- AHT Trend,
+- Inbound Calls by Hour.
+
+05_power-bi-dashboard/05_04_operational-analytics.png
+
+### Segments & Agents Analysis
+
+Strona pokazuje analizę efektywności konsultantów, zespołów oraz segmentów klientów.
+
+Widoczne są m.in.:
+
+- FCR by Agent Team,
+- Average Handle Time by Team,
+- Calls Handled by Agent,
+- FCR by Agent,
+- AHT by Agent,
+- Customer Segment Call Volume,
+- FCR by Customer Segment,
+- Trend Analysis for Agents.
+
+05_power-bi-dashboard/05_05_segments-and-agents-analysis.png
+
+### Alerts & Exceptions
+
+Strona pokazuje alerty operacyjne i wyjątki wymagające uwagi lidera lub menedżera Contact Center.
+
+Widoczne są m.in.:
+
+- Cases Past SLA,
+- Unresolved Callbacks,
+- Abandoned Calls,
+- Agents with High AHT,
+- lista spraw po SLA,
+- alerty callbacków,
+- tabela konsultantów wymagających analizy.
+
+05_power-bi-dashboard/05_06_alerts-and-exceptions.png
 
 ---
 
@@ -479,6 +556,16 @@ Dashboard został przygotowany jako narzędzie wspierające pracę liderów i me
 
 ## Jak uruchomić projekt
 
+Projekt można uruchamiać warstwowo — od modelu danych SQL, przez zapytania KPI, aż po dashboard Power BI.
+
+Szczegółowa instrukcja uruchomienia znajduje się w pliku:
+
+```text
+06_documentation/06_04_run-instructions.md
+```
+
+### Szybki start
+
 1. Utwórz lokalną bazę danych, np. w MS SQL Server lub Azure SQL.
 
 2. Uruchom skrypt tworzący strukturę bazy:
@@ -501,15 +588,86 @@ Dashboard został przygotowany jako narzędzie wspierające pracę liderów i me
 
 5. Otwórz Power BI Desktop.
 
-6. Połącz raport z lokalną bazą danych.
-
-7. Otwórz plik:
+6. Otwórz plik dashboardu:
 
 ```text
 05_power-bi-dashboard/05_01_contact-center-kpis-dashboard.pbix
 ```
 
-8. Odśwież dane w Power BI.
+7. Połącz raport z lokalną bazą danych i odśwież dane.
+
+---
+
+## FAQ
+
+### Czy projekt jest pełną implementacją systemu Contact Center?
+
+Nie. Projekt ma charakter portfolio i case study. Nie przedstawia kompletnej implementacji produkcyjnej systemu Contact Center, ale pokazuje pełny tok pracy analitycznej: od problemu biznesowego, przez proces BPMN AS-IS / TO-BE, wymagania, architekturę, API, model danych SQL, KPI oraz dashboard Power BI.
+
+### Jaki jest główny cel projektu?
+
+Głównym celem projektu jest pokazanie, w jaki sposób można przeanalizować i usprawnić proces obsługi połączeń przychodzących w Contact Center oraz przełożyć tę analizę na konkretne artefakty: wymagania, modele BPMN, architekturę logiczną, model danych, zapytania KPI i dashboard Power BI.
+
+### Czym różni się proces AS-IS od TO-BE?
+
+Proces AS-IS pokazuje obecny sposób obsługi połączeń, w którym występują m.in. kolejki, porzucone połączenia, ograniczony self-service i brak callbacku.
+
+Proces TO-BE pokazuje proces docelowy po usprawnieniach, takich jak self-service w IVR, callback, tagowanie powodów kontaktu, lepsze monitorowanie SLA i uporządkowana eskalacja do 2nd line.
+
+### Dlaczego w projekcie wykorzystano BPMN?
+
+BPMN został użyty do pokazania procesu biznesowego w sposób czytelny dla osób biznesowych i technicznych. Diagramy AS-IS i TO-BE pozwalają porównać obecny proces z procesem docelowym oraz wskazać miejsca, w których zaprojektowano usprawnienia.
+
+### Dlaczego w projekcie jest część SQL?
+
+Część SQL pokazuje, jak dane z procesu Contact Center mogą zostać zapisane w relacyjnym modelu danych i wykorzystane do analizy KPI.
+
+Model danych obejmuje m.in. połączenia, sprawy, kontakty, konsultantów, klientów, callbacki i zdarzenia SLA.
+
+### Jakie KPI są analizowane w projekcie?
+
+Projekt analizuje kluczowe KPI Contact Center, m.in. ASA, AHT, FCR, SLA Rate, Abandonment Rate, Self-service Rate, Callback Rate, Callback Realization Rate i Escalation Rate.
+
+### Po co w projekcie znajduje się dashboard Power BI?
+
+Dashboard Power BI pokazuje, jak dane z modelu SQL mogą zostać wykorzystane do monitorowania efektywności Contact Center. Raport wspiera podejmowanie decyzji dotyczących obsady zespołu, kolejek, callbacków, SLA, eskalacji i jakości obsługi.
+
+### Czy projekt zawiera specyfikację API?
+
+Tak. Projekt zawiera opis przykładowej specyfikacji REST API oraz plik OpenAPI:
+
+```text
+03_solution-architecture/03_04_openapi.yaml
+```
+
+Specyfikacja obejmuje przykładowe endpointy, m.in.:
+
+- utworzenie callbacku,
+- pobranie danych klienta,
+- pobranie historii kontaktów,
+- aktualizację statusu sprawy,
+- pobranie KPI Contact Center.
+
+### Czy można uruchomić projekt lokalnie?
+
+Tak, częściowo. Można lokalnie uruchomić warstwę danych SQL i zapytania KPI.
+
+Szczegółowa instrukcja znajduje się w pliku:
+
+```text
+06_documentation/06_04_run-instructions.md
+```
+
+### Dla jakich ról ten projekt jest przygotowany?
+
+Projekt może być wykorzystany jako portfolio dla ról:
+
+- Business Analyst,
+- Business-System Analyst,
+- Process Analyst,
+- BI Analyst,
+- Data Analyst,
+- Junior / Mid IT Business Analyst.
 
 ---
 
@@ -552,86 +710,3 @@ Projekt pokazuje pełne przejście:
 Problem biznesowy → wymagania → proces TO-BE → architektura → API → dane SQL → KPI → dashboard Power BI
 ```
 
----
-
-## FAQ
-
-### 1. Czy projekt jest pełną implementacją systemu Contact Center?
-
-Nie. Projekt ma charakter portfolio i case study. Nie przedstawia kompletnej implementacji produkcyjnej systemu Contact Center, ale pokazuje pełny tok pracy analitycznej: od problemu biznesowego, przez proces BPMN AS-IS / TO-BE, wymagania, architekturę, API, model danych SQL, KPI oraz dashboard Power BI.
-
----
-
-### 2. Jaki jest główny cel projektu?
-
-Głównym celem projektu jest pokazanie, w jaki sposób można przeanalizować i usprawnić proces obsługi połączeń przychodzących w Contact Center oraz przełożyć tę analizę na konkretne artefakty: wymagania, modele BPMN, architekturę logiczną, model danych, zapytania KPI i dashboard Power BI.
-
----
-
-### 3. Czym różni się proces AS-IS od TO-BE?
-
-Proces AS-IS pokazuje obecny sposób obsługi połączeń, w którym występują m.in. kolejki, porzucone połączenia, ograniczony self-service i brak callbacku.
-
-Proces TO-BE pokazuje proces docelowy po usprawnieniach, takich jak:
-
-- self-service w IVR,
-- callback zamiast oczekiwania w kolejce,
-- tagowanie powodów kontaktu,
-- lepsze monitorowanie SLA,
-- uporządkowana eskalacja do 2nd line,
-- dane przygotowane pod raportowanie KPI.
-
----
-
-### 4. Dlaczego w projekcie wykorzystano BPMN?
-
-BPMN został użyty do pokazania procesu biznesowego w sposób czytelny dla osób biznesowych i technicznych. Diagramy AS-IS i TO-BE pozwalają porównać obecny proces z procesem docelowym oraz wskazać miejsca, w których zaprojektowano usprawnienia.
-
----
-
-### 5. Dlaczego w projekcie jest część SQL?
-
-Część SQL pokazuje, jak dane z procesu Contact Center mogą zostać zapisane w relacyjnym modelu danych i wykorzystane do analizy KPI.
-
-Model danych obejmuje m.in.:
-
-- połączenia,
-- sprawy,
-- kontakty,
-- konsultantów,
-- klientów,
-- callbacki,
-- zdarzenia SLA.
-
-Dzięki temu projekt pokazuje nie tylko proces, ale także sposób mierzenia jego efektywności.
-
----
-
-### 6. Jakie KPI są analizowane w projekcie?
-
-Projekt analizuje kluczowe KPI Contact Center, m.in.:
-
-- ASA — Average Speed of Answer,
-- AHT — Average Handle Time,
-- FCR — First Contact Resolution,
-- SLA Rate,
-- Abandonment Rate,
-- Self-service Rate,
-- Callback Rate,
-- Callback Realization Rate,
-- Escalation Rate.
-
----
-
-### 7. Po co w projekcie znajduje się dashboard Power BI?
-
-Dashboard Power BI pokazuje, jak dane z modelu SQL mogą zostać wykorzystane do monitorowania efektywności Contact Center. Raport wspiera podejmowanie decyzji dotyczących m.in. obsady zespołu, kolejek, callbacków, SLA, eskalacji i jakości obsługi.
-
----
-
-### 8. Czy projekt zawiera specyfikację API?
-
-Tak. Projekt zawiera opis przykładowej specyfikacji REST API oraz plik OpenAPI:
-
-```text
-03_solution-architecture/03_04_openapi.yaml
